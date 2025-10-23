@@ -12,7 +12,7 @@
         http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
 
     <!-- Scan des repositories -->
-<!--    <jpa:repositories base-package="com.delivery.repository"/>-->
+    <jpa:repositories base-package="com.delivery.repository"/>
 
 <!--    &lt;!&ndash; ========== BEANS OPTIMIZERS ========== &ndash;&gt;-->
 <!--    <bean id="nearestNeighborOptimizer" class="com.delivery.optimizer.NearestNeighborOptimizer"/>-->
