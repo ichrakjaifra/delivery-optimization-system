@@ -8,5 +8,8 @@ import java.util.List;
 
 public interface WarehouseRepository extends JpaRepository<Warehouse, Long> {
 
+    @Query("SELECT w FROM Warehouse w WHERE w.openingHours IS NOT NULL")
+    List<Warehouse> findActiveWarehouses();
 
+    Warehouse findByName(String name);
 }
