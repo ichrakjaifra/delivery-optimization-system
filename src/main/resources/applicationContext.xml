@@ -12,12 +12,11 @@
         http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
 
     <!-- Scan des repositories -->
+         <jpa:repositories base-package="com.delivery.repository"/>
 
-    <jpa:repositories base-package="com.delivery.repository"/>
-
-<!--    &lt;!&ndash; ========== BEANS OPTIMIZERS ========== &ndash;&gt;-->
-<!--    <bean id="nearestNeighborOptimizer" class="com.delivery.optimizer.NearestNeighborOptimizer"/>-->
-<!--    <bean id="clarkeWrightOptimizer" class="com.delivery.optimizer.ClarkeWrightOptimizer"/>-->
+    <!-- ========== BEANS OPTIMIZERS ========== -->
+         <bean id="nearestNeighborOptimizer" class="com.delivery.optimizer.NearestNeighborOptimizer"/>
+         <bean id="clarkeWrightOptimizer" class="com.delivery.optimizer.ClarkeWrightOptimizer"/>
 
 <!--    &lt;!&ndash; ========== BEANS MAPPERS ========== &ndash;&gt;-->
 <!--    <bean id="deliveryMapper" class="com.delivery.mapper.DeliveryMapper"/>-->
@@ -25,27 +24,27 @@
 <!--    <bean id="tourMapper" class="com.delivery.mapper.TourMapper"/>-->
 <!--    <bean id="warehouseMapper" class="com.delivery.mapper.WarehouseMapper"/>-->
 
-<!--    &lt;!&ndash; ========== BEANS SERVICES ========== &ndash;&gt;-->
-<!--    <bean id="deliveryService" class="com.delivery.service.DeliveryService">-->
-<!--        <constructor-arg ref="deliveryRepository"/>-->
-<!--    </bean>-->
+    <!-- ========== BEANS SERVICES ========== -->
+         <bean id="deliveryService" class="com.delivery.service.DeliveryService">
+             <constructor-arg ref="deliveryRepository"/>
+         </bean>
 
-<!--    <bean id="vehicleService" class="com.delivery.service.VehicleService">-->
-<!--        <constructor-arg ref="vehicleRepository"/>-->
-<!--    </bean>-->
+         <bean id="vehicleService" class="com.delivery.service.VehicleService">
+             <constructor-arg ref="vehicleRepository"/>
+         </bean>
 
-<!--    <bean id="warehouseService" class="com.delivery.service.WarehouseService">-->
-<!--        <constructor-arg ref="warehouseRepository"/>-->
-<!--    </bean>-->
+         <bean id="warehouseService" class="com.delivery.service.WarehouseService">
+             <constructor-arg ref="warehouseRepository"/>
+         </bean>
 
-<!--    <bean id="tourService" class="com.delivery.service.TourService">-->
-<!--        <constructor-arg ref="tourRepository"/>-->
-<!--        <constructor-arg ref="deliveryRepository"/>-->
-<!--        <constructor-arg ref="vehicleRepository"/>-->
-<!--        <constructor-arg ref="warehouseRepository"/>-->
-<!--        <constructor-arg ref="nearestNeighborOptimizer"/>-->
-<!--        <constructor-arg ref="clarkeWrightOptimizer"/>-->
-<!--    </bean>-->
+         <bean id="tourService" class="com.delivery.service.TourService">
+             <constructor-arg ref="tourRepository"/>
+             <constructor-arg ref="deliveryRepository"/>
+             <constructor-arg ref="vehicleRepository"/>
+             <constructor-arg ref="warehouseRepository"/>
+             <constructor-arg ref="nearestNeighborOptimizer"/>
+             <constructor-arg ref="clarkeWrightOptimizer"/>
+         </bean>
 
     <!-- ========== BEANS CONTROLLERS ========== -->
 <!--    <bean id="deliveryController" class="com.delivery.controller.DeliveryController">-->
