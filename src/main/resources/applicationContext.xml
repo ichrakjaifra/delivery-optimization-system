@@ -18,11 +18,11 @@
          <bean id="nearestNeighborOptimizer" class="com.delivery.optimizer.NearestNeighborOptimizer"/>
          <bean id="clarkeWrightOptimizer" class="com.delivery.optimizer.ClarkeWrightOptimizer"/>
 
-<!--    &lt;!&ndash; ========== BEANS MAPPERS ========== &ndash;&gt;-->
-<!--    <bean id="deliveryMapper" class="com.delivery.mapper.DeliveryMapper"/>-->
-<!--    <bean id="vehicleMapper" class="com.delivery.mapper.VehicleMapper"/>-->
-<!--    <bean id="tourMapper" class="com.delivery.mapper.TourMapper"/>-->
-<!--    <bean id="warehouseMapper" class="com.delivery.mapper.WarehouseMapper"/>-->
+    <!-- ========== BEANS MAPPERS ========== -->
+         <bean id="deliveryMapper" class="com.delivery.mapper.DeliveryMapper"/>
+         <bean id="vehicleMapper" class="com.delivery.mapper.VehicleMapper"/>
+         <bean id="tourMapper" class="com.delivery.mapper.TourMapper"/>
+         <bean id="warehouseMapper" class="com.delivery.mapper.WarehouseMapper"/>
 
     <!-- ========== BEANS SERVICES ========== -->
          <bean id="deliveryService" class="com.delivery.service.DeliveryService">
@@ -47,23 +47,23 @@
          </bean>
 
     <!-- ========== BEANS CONTROLLERS ========== -->
-<!--    <bean id="deliveryController" class="com.delivery.controller.DeliveryController">-->
-<!--        <constructor-arg ref="deliveryService"/>-->
-<!--        <constructor-arg ref="deliveryMapper"/>-->
-<!--    </bean>-->
+         <bean id="deliveryController" class="com.delivery.controller.DeliveryController">
+             <constructor-arg ref="deliveryService"/>
+             <constructor-arg ref="deliveryMapper"/>
+         </bean>
 
-<!--    <bean id="vehicleController" class="com.delivery.controller.VehicleController">-->
-<!--        <constructor-arg ref="vehicleService"/>-->
-<!--        <constructor-arg ref="vehicleMapper"/>-->
-<!--    </bean>-->
+         <bean id="vehicleController" class="com.delivery.controller.VehicleController">
+             <constructor-arg ref="vehicleService"/>
+             <constructor-arg ref="vehicleMapper"/>
+         </bean>
 
-<!--    <bean id="tourController" class="com.delivery.controller.TourController">-->
-<!--        <constructor-arg ref="tourService"/>-->
-<!--        <constructor-arg ref="tourMapper"/>-->
-<!--    </bean>-->
+         <bean id="tourController" class="com.delivery.controller.TourController">
+             <constructor-arg ref="tourService"/>
+             <constructor-arg ref="tourMapper"/>
+         </bean>
 
-<!--    <bean id="warehouseController" class="com.delivery.controller.WarehouseController">-->
-<!--        <constructor-arg ref="warehouseService"/>-->
-<!--        <constructor-arg ref="warehouseMapper"/>-->
-<!--    </bean>-->
+         <bean id="warehouseController" class="com.delivery.controller.WarehouseController">
+             <constructor-arg ref="warehouseService"/>
+             <constructor-arg ref="warehouseMapper"/>
+         </bean>
 </beans>

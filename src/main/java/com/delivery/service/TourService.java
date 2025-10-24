@@ -1,7 +1,7 @@
 package com.delivery.service;
 
 import com.delivery.entity.*;
-
+import com.delivery.optimizer.TourOptimizer;
 import com.delivery.repository.TourRepository;
 import com.delivery.repository.DeliveryRepository;
 import com.delivery.repository.VehicleRepository;
@@ -21,16 +21,18 @@ public class TourService {
     private final DeliveryRepository deliveryRepository;
     private final VehicleRepository vehicleRepository;
     private final WarehouseRepository warehouseRepository;
-
+    private final TourOptimizer nearestNeighborOptimizer;
+    private final TourOptimizer clarkeWrightOptimizer;
 
     public TourService(TourRepository tourRepository, DeliveryRepository deliveryRepository,
-                       VehicleRepository vehicleRepository, WarehouseRepository warehouseRepository) {
+                       VehicleRepository vehicleRepository, WarehouseRepository warehouseRepository,
+                       TourOptimizer nearestNeighborOptimizer, TourOptimizer clarkeWrightOptimizer) {
         this.tourRepository = tourRepository;
         this.deliveryRepository = deliveryRepository;
         this.vehicleRepository = vehicleRepository;
         this.warehouseRepository = warehouseRepository;
-
-
+        this.nearestNeighborOptimizer = nearestNeighborOptimizer;
+        this.clarkeWrightOptimizer = clarkeWrightOptimizer;
     }
 
     public List<Tour> getAllTours() {
@@ -72,7 +74,94 @@ public class TourService {
         return tourRepository.save(tour);
     }
 
+    @Transactional
+    public Tour optimizeTour(Long tourId, Tour.AlgorithmType algorithmType) {
+        logger.info("Optimizing tour " + tourId + " with algorithm: " + algorithmType);
 
+        Optional<Tour> tourOpt = tourRepository.findById(tourId);
+        if (tourOpt.isEmpty()) {
+            throw new RuntimeException("Tour not found with id: " + tourId);
+        }
+
+        Tour tour = tourOpt.get();
+        List<Delivery> deliveries = tour.getDeliveries();
+        Warehouse warehouse = tour.getWarehouse();
+        Vehicle vehicle = tour.getVehicle();
+
+        if (deliveries.isEmpty()) {
+            throw new RuntimeException("No deliveries found for tour id: " + tourId);
+        }
+
+        double totalWeight = deliveries.stream().mapToDouble(Delivery::getWeight).sum();
+        double totalVolume = deliveries.stream().mapToDouble(Delivery::getVolume).sum();
+        int deliveryCount = deliveries.size();
+
+        if (!vehicle.isValidForDelivery(totalWeight, totalVolume, deliveryCount)) {
+            String errorMsg = String.format(
+                    "Le véhicule %s ne peut pas transporter %d livraisons (Poids: %.1fkg/%.1fkg, Volume: %.2fm³/%.2fm³)",
+                    vehicle.getLicensePlate(), deliveryCount, totalWeight, vehicle.getMaxWeight(),
+                    totalVolume, vehicle.getMaxVolume());
+            logger.severe(errorMsg);
+            throw new RuntimeException(errorMsg);
+        }
+
+        TourOptimizer optimizer = algorithmType == Tour.AlgorithmType.NEAREST_NEIGHBOR ?
+                nearestNeighborOptimizer : clarkeWrightOptimizer;
+
+        List<Delivery> optimizedDeliveries = optimizer.calculateOptimalTour(warehouse, deliveries, vehicle);
+        Double totalDistance = optimizer.calculateTotalDistance(warehouse, optimizedDeliveries);
+
+        // Mettre à jour les livraisons avec le nouvel ordre
+        for (Delivery delivery : optimizedDeliveries) {
+            delivery.setTour(tour);
+            deliveryRepository.save(delivery);
+        }
+
+        tour.setDeliveries(optimizedDeliveries);
+        tour.setAlgorithmUsed(algorithmType);
+        tour.setTotalDistance(totalDistance);
+
+        logger.info("Optimization completed for tour " + tourId + " - Distance: " + totalDistance + "km");
+
+        return tourRepository.save(tour);
+    }
+
+    public List<Delivery> getOptimizedTour(Long tourId, Tour.AlgorithmType algorithmType) {
+        logger.info("Getting optimized tour for tour " + tourId + " with algorithm: " + algorithmType);
+
+        Optional<Tour> tourOpt = tourRepository.findById(tourId);
+        if (tourOpt.isEmpty()) {
+            throw new RuntimeException("Tour not found with id: " + tourId);
+        }
+
+        Tour tour = tourOpt.get();
+        List<Delivery> deliveries = tour.getDeliveries();
+        Warehouse warehouse = tour.getWarehouse();
+        Vehicle vehicle = tour.getVehicle();
+
+        TourOptimizer optimizer = algorithmType == Tour.AlgorithmType.NEAREST_NEIGHBOR ?
+                nearestNeighborOptimizer : clarkeWrightOptimizer;
+
+        return optimizer.calculateOptimalTour(warehouse, deliveries, vehicle);
+    }
+
+    public Double getTotalDistance(Long tourId, Tour.AlgorithmType algorithmType) {
+        logger.info("Calculating total distance for tour " + tourId + " with algorithm: " + algorithmType);
+
+        Optional<Tour> tourOpt = tourRepository.findById(tourId);
+        if (tourOpt.isEmpty()) {
+            throw new RuntimeException("Tour not found with id: " + tourId);
+        }
+
+        Tour tour = tourOpt.get();
+        List<Delivery> deliveries = tour.getDeliveries();
+        Warehouse warehouse = tour.getWarehouse();
+
+        TourOptimizer optimizer = algorithmType == Tour.AlgorithmType.NEAREST_NEIGHBOR ?
+                nearestNeighborOptimizer : clarkeWrightOptimizer;
+
+        return optimizer.calculateTotalDistance(warehouse, deliveries);
+    }
 
     public List<Tour> getToursByDate(LocalDate date) {
         logger.info("Fetching tours for date: " + date);
