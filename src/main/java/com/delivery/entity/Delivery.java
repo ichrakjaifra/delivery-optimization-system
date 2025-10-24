@@ -99,8 +99,8 @@ public class Delivery {
     }
 
 
-    public double calculateDistance(Delivery other) {
-        final int R = 6371; // Rayon de la Terre en km
+    /*public double calculateDistance(Delivery other) {
+        final int R = 6371;
 
         double latDistance = Math.toRadians(other.latitude - this.latitude);
         double lonDistance = Math.toRadians(other.longitude - this.longitude);
@@ -112,9 +112,9 @@ public class Delivery {
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
         return R * c;
-    }
+    }*/
 
-    public double calculateDistance(Warehouse warehouse) {
+    /*public double calculateDistance(Warehouse warehouse) {
         final int R = 6371;
 
         double latDistance = Math.toRadians(warehouse.getLatitude() - this.latitude);
@@ -127,5 +127,5 @@ public class Delivery {
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
         return R * c;
-    }
+    }*/
 }
