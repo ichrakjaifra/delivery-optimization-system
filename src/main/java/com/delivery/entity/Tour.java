@@ -1,10 +1,10 @@
 package com.delivery.entity;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,11 +32,11 @@ public class Tour {
     private Warehouse warehouse;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     private AlgorithmType algorithmUsed;
 
     @Column(nullable = false)
-    private Double totalDistance;
+    private Double totalDistance; // en km
 
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @OrderBy("order ASC")
@@ -44,5 +44,57 @@ public class Tour {
 
     public enum AlgorithmType {
         NEAREST_NEIGHBOR, CLARKE_WRIGHT
+    }
+
+
+    public boolean isValidForVehicle() {
+        if (this.vehicle == null || this.deliveries == null) {
+            return false;
+        }
+
+        double totalWeight = this.deliveries.stream()
+                .mapToDouble(Delivery::getWeight)
+                .sum();
+
+        double totalVolume = this.deliveries.stream()
+                .mapToDouble(Delivery::getVolume)
+                .sum();
+
+        int deliveryCount = this.deliveries.size();
+
+        return this.vehicle.isValidForDelivery(totalWeight, totalVolume, deliveryCount);
+    }
+
+
+    public Double getTotalWeight() {
+        return this.deliveries.stream()
+                .mapToDouble(Delivery::getWeight)
+                .sum();
+    }
+
+    public Double getTotalVolume() {
+        return this.deliveries.stream()
+                .mapToDouble(Delivery::getVolume)
+                .sum();
+    }
+
+    public Integer getDeliveryCount() {
+        return this.deliveries.size();
+    }
+
+
+    public void validate() {
+        if (this.date == null) {
+            throw new IllegalArgumentException("La date est obligatoire");
+        }
+        if (this.vehicle == null) {
+            throw new IllegalArgumentException("Le véhicule est obligatoire");
+        }
+        if (this.warehouse == null) {
+            throw new IllegalArgumentException("L'entrepôt est obligatoire");
+        }
+        if (!isValidForVehicle()) {
+            throw new IllegalArgumentException("Les livraisons dépassent la capacité du véhicule");
+        }
     }
 }
