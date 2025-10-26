@@ -2,12 +2,23 @@ package com.delivery.mapper;
 
 import com.delivery.dto.TourDTO;
 import com.delivery.entity.Tour;
+import com.delivery.service.VehicleService;
+import com.delivery.service.WarehouseService;
 import org.springframework.stereotype.Component;
 
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-@Component
+
 public class TourMapper {
+
+    private final VehicleService vehicleService;
+    private final WarehouseService warehouseService;
+
+    public TourMapper(VehicleService vehicleService, WarehouseService warehouseService) {
+        this.vehicleService = vehicleService;
+        this.warehouseService = warehouseService;
+    }
 
     public TourDTO toDTO(Tour tour) {
         if (tour == null) {
@@ -38,6 +49,21 @@ public class TourMapper {
         tour.setDate(dto.getDate());
         tour.setAlgorithmUsed(dto.getAlgorithmUsed());
         tour.setTotalDistance(dto.getTotalDistance());
+
+        if (dto.getVehicleId() != null) {
+            tour.setVehicle(vehicleService.getVehicleById(dto.getVehicleId())
+                    .orElseThrow(() -> new NoSuchElementException("Vehicle not found with ID: " + dto.getVehicleId())));
+        } else {
+            tour.setVehicle(null);
+        }
+
+
+        if (dto.getWarehouseId() != null) {
+            tour.setWarehouse(warehouseService.getWarehouseById(dto.getWarehouseId())
+                    .orElseThrow(() -> new NoSuchElementException("Warehouse not found with ID: " + dto.getWarehouseId())));
+        } else {
+            tour.setWarehouse(null);
+        }
 
         return tour;
     }

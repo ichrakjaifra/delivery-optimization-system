@@ -146,4 +146,17 @@ public class TourController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+
+    @PostMapping("/{tourId}/deliveries/{deliveryId}")
+    public ResponseEntity<Void> addDeliveryToTour(@PathVariable Long tourId, @PathVariable Long deliveryId) {
+        try {
+            tourService.addDeliveryToTour(tourId, deliveryId);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }
