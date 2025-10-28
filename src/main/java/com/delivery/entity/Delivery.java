@@ -1,5 +1,6 @@
 package com.delivery.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -42,6 +43,7 @@ public class Delivery {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tour_id")
+    @JsonIgnoreProperties({"deliveries", "vehicle", "warehouse"})
     private Tour tour;
 
     @Column(name = "delivery_order")
@@ -98,34 +100,4 @@ public class Delivery {
         }
     }
 
-
-    /*public double calculateDistance(Delivery other) {
-        final int R = 6371;
-
-        double latDistance = Math.toRadians(other.latitude - this.latitude);
-        double lonDistance = Math.toRadians(other.longitude - this.longitude);
-
-        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
-                + Math.cos(Math.toRadians(this.latitude)) * Math.cos(Math.toRadians(other.latitude))
-                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
-
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-        return R * c;
-    }*/
-
-    /*public double calculateDistance(Warehouse warehouse) {
-        final int R = 6371;
-
-        double latDistance = Math.toRadians(warehouse.getLatitude() - this.latitude);
-        double lonDistance = Math.toRadians(warehouse.getLongitude() - this.longitude);
-
-        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
-                + Math.cos(Math.toRadians(this.latitude)) * Math.cos(Math.toRadians(warehouse.getLatitude()))
-                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
-
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-        return R * c;
-    }*/
 }

@@ -1,5 +1,6 @@
 package com.delivery.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -39,6 +40,7 @@ public class Vehicle {
     private Double range; // rayon d'action en km
 
     @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Tour> tours = new ArrayList<>();
 
     public enum VehicleType {

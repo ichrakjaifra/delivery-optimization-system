@@ -1,5 +1,7 @@
 package com.delivery.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,10 +27,12 @@ public class Tour {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vehicle_id", nullable = false)
+    @JsonIgnoreProperties({"tours"})
     private Vehicle vehicle;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "warehouse_id", nullable = false)
+    @JsonIgnoreProperties({"tours"})
     private Warehouse warehouse;
 
     @Enumerated(EnumType.STRING)
@@ -40,6 +44,7 @@ public class Tour {
 
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @OrderBy("order ASC")
+    @JsonIgnore
     private List<Delivery> deliveries = new ArrayList<>();
 
     public enum AlgorithmType {
