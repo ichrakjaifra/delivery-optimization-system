@@ -212,4 +212,78 @@ public class TourService {
         delivery.setOrder(null);
         deliveryRepository.save(delivery);
     }
+
+    @Transactional
+    public Tour updateTour(Long id, Tour tourDetails) {
+        logger.info("Updating tour with id: " + id);
+
+        Optional<Tour> tourOpt = tourRepository.findById(id);
+        if (tourOpt.isEmpty()) {
+            throw new RuntimeException("Tour not found with id: " + id);
+        }
+
+        Tour tour = tourOpt.get();
+
+        // Mettre à jour les champs modifiables
+        if (tourDetails.getDate() != null) {
+            tour.setDate(tourDetails.getDate());
+        }
+
+        if (tourDetails.getAlgorithmUsed() != null) {
+            tour.setAlgorithmUsed(tourDetails.getAlgorithmUsed());
+        }
+
+        if (tourDetails.getTotalDistance() != null) {
+            tour.setTotalDistance(tourDetails.getTotalDistance());
+        }
+
+        // Mettre à jour le véhicule si fourni
+        if (tourDetails.getVehicle() != null && tourDetails.getVehicle().getId() != null) {
+            Vehicle vehicle = vehicleRepository.findById(tourDetails.getVehicle().getId())
+                    .orElseThrow(() -> new RuntimeException("Vehicle not found with id: " + tourDetails.getVehicle().getId()));
+            tour.setVehicle(vehicle);
+        }
+
+        // Mettre à jour l'entrepôt si fourni
+        if (tourDetails.getWarehouse() != null && tourDetails.getWarehouse().getId() != null) {
+            Warehouse warehouse = warehouseRepository.findById(tourDetails.getWarehouse().getId())
+                    .orElseThrow(() -> new RuntimeException("Warehouse not found with id: " + tourDetails.getWarehouse().getId()));
+            tour.setWarehouse(warehouse);
+        }
+
+        try {
+            tour.validate();
+            logger.info("Tour updated successfully for id: " + id);
+        } catch (IllegalArgumentException e) {
+            logger.severe("Validation error while updating tour: " + e.getMessage());
+            throw new RuntimeException("Erreur de validation: " + e.getMessage());
+        }
+
+        return tourRepository.save(tour);
+    }
+
+    @Transactional
+    public void deleteTour(Long id) {
+        logger.info("Deleting tour with id: " + id);
+
+        Optional<Tour> tourOpt = tourRepository.findById(id);
+        if (tourOpt.isEmpty()) {
+            throw new RuntimeException("Tour not found with id: " + id);
+        }
+
+        Tour tour = tourOpt.get();
+
+        // Désassocier les livraisons de cette tournée
+        if (!tour.getDeliveries().isEmpty()) {
+            for (Delivery delivery : tour.getDeliveries()) {
+                delivery.setTour(null);
+                delivery.setOrder(null);
+                deliveryRepository.save(delivery);
+            }
+            tour.getDeliveries().clear();
+        }
+
+        tourRepository.delete(tour);
+        logger.info("Tour deleted successfully with id: " + id);
+    }
 }

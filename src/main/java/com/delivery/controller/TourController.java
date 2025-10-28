@@ -62,6 +62,32 @@ public class TourController {
         }
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<TourDTO> updateTour(@PathVariable Long id, @RequestBody TourDTO tourDTO) {
+        try {
+            Tour tour = tourMapper.toEntity(tourDTO);
+            Tour updatedTour = tourService.updateTour(id, tour);
+            TourDTO updatedDTO = tourMapper.toDTO(updatedTour);
+            return ResponseEntity.ok(updatedDTO);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTour(@PathVariable Long id) {
+        try {
+            tourService.deleteTour(id);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @PostMapping("/{id}/optimize")
     public ResponseEntity<TourDTO> optimizeTour(@PathVariable Long id, @RequestParam Tour.AlgorithmType algorithm) {
         try {
@@ -152,6 +178,18 @@ public class TourController {
     public ResponseEntity<Void> addDeliveryToTour(@PathVariable Long tourId, @PathVariable Long deliveryId) {
         try {
             tourService.addDeliveryToTour(tourId, deliveryId);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @DeleteMapping("/{tourId}/deliveries/{deliveryId}")
+    public ResponseEntity<Void> removeDeliveryFromTour(@PathVariable Long tourId, @PathVariable Long deliveryId) {
+        try {
+            tourService.removeDeliveryFromTour(tourId, deliveryId);
             return ResponseEntity.ok().build();
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
